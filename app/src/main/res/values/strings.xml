@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">StudyCards</string>
+    <string name="mainmenutitle">Study\nCards</string>
+    <string name="kezd_button">Felelet kezdése</string>
+    <string name="kezel_button">Kártyák kezelése</string>
+    <string name="kezdes">Kezdés</string>
+    <string name="kartya_letrehozasa">Kártya létrehozása</string>
+    <string name="kartya_modositasa">Kártya módosítása</string>
+    <string name="tagek_kezelese">Tagek kezelése</string>
+    <string name="tagek_kivalasztasa">Tagek kiválasztása</string>
+    <string name="ok">OK</string>
+    <string name="kerdes">Kérdés</string>
+    <string name="kivalasztott_tag">"%d db tag kiválasztva</string>
+    <string name="hibas_valasz">Hibás válasz</string>
+    <string name="kartya_mentese">Kártya mentése</string>
+    <string name="feleletvalasztos">Feleletválasztós</string>
+    <string name="valaszolos">Válaszolós</string>
+    <string name="mentes">Mentés</string>
+    <string name="valassz_tageket">Válassz tageket</string>
+    <string name="ellenorzes">Ellenőrzés</string>
+    <string name="kovetkezo">Következő</string>
+</resources>
