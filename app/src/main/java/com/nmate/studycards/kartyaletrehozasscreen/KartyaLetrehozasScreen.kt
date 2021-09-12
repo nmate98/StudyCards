@@ -1,14 +1,12 @@
 package com.nmate.studycards.kartyaletrehozasscreen
 
 import android.app.Application
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -39,14 +37,42 @@ fun KartyaLetrehozasScreen(navController: NavHostController) {
     var hibas2 by remember { mutableStateOf("") }
     var hibas3 by remember { mutableStateOf("") }
     var tagValaszt by remember { mutableStateOf(false) }
-
     val tagek: List<Tag> by viewmodel.tagek.observeAsState(listOf())
+    var alertDialog by remember { mutableStateOf(false) }
+
+    BackHandler(true) {
+        alertDialog = true
+    }
+
+    if (alertDialog) {
+        AlertDialog(onDismissRequest = { alertDialog = false },
+            dismissButton = {
+                Button(onClick = {
+                    alertDialog = false
+                }) { Text(stringResource(R.string.nem)) }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    alertDialog = false
+                    navController.popBackStack("MainMenu", true)
+                    navController.navigate("MainMenu")
+                }) { Text(stringResource(R.string.igen)) }
+
+            },
+            title = { Text(stringResource(R.string.kilepes)) },
+            text = { Text(stringResource(R.string.biztosan_kilepsz)) })
+    }
 
     viewmodel.getTagek()
 
     if (tagValaszt) {
-        Dialog(onDismissRequest = { tagValaszt = false },
-            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false)) {
+        viewmodel.tagMasol()
+        Dialog(onDismissRequest = {
+            tagValaszt = false
+            viewmodel.tagVisszaallit()
+        },
+            properties = DialogProperties(dismissOnBackPress = true,
+                dismissOnClickOutside = false)) {
             Box(Modifier
                 .fillMaxHeight(0.9f)
                 .fillMaxWidth(0.9f)
@@ -126,8 +152,10 @@ fun KartyaLetrehozasScreen(navController: NavHostController) {
     }
 
     Column() {
-        TextField(value = kerdes, onValueChange = { kerdes = it }, placeholder = { Text(
-                    stringResource(R.string.kerdes)) })
+        TextField(value = kerdes, onValueChange = { kerdes = it }, placeholder = {
+            Text(
+                stringResource(R.string.kerdes))
+        })
         Row() {
             Button(onClick = {
                 tipus = if (tipus == Tipus.VALASZOLOS) {

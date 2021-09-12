@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.nmate.studycards.adatbazis.Dao
 import com.nmate.studycards.kartyaletrehozasscreen.KartyaLetrehozasScreenViewModel
 
-class FeleletScreenViewModelFactory(private val db: Dao) : ViewModelProvider.Factory {
+class FeleletScreenViewModelFactory(private val db: Dao, private val idStringList: String) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return FeleletScreenViewModel(db) as T
+        return FeleletScreenViewModel(db, idStringList) as T
     }
 }

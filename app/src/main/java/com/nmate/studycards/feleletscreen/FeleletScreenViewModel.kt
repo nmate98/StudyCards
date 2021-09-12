@@ -1,6 +1,9 @@
 package com.nmate.studycards.feleletscreen
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FeleletScreenViewModel(private val db: Dao) : ViewModel() {
+class FeleletScreenViewModel(private val db: Dao, private val id: String) : ViewModel() {
 
     private val _kartyak = MutableLiveData<List<Kartya>>()
     val kartyak: LiveData<List<Kartya>> = _kartyak
@@ -20,7 +23,8 @@ class FeleletScreenViewModel(private val db: Dao) : ViewModel() {
     private val _helyes = MutableLiveData<Long>(0)
     val helyes: LiveData<Long> = _helyes
 
-    private var _ssz = -1
+    private var _ssz = 0
+
 
     private val _aktualisKerdes = MutableLiveData(Kartya())
     val aktualisKerdes: LiveData<Kartya> = _aktualisKerdes
@@ -36,8 +40,9 @@ class FeleletScreenViewModel(private val db: Dao) : ViewModel() {
     private val _kesz = MutableLiveData(false)
     val kesz : LiveData<Boolean> = _kesz
 
-    fun getKerdesek(idStringList: List<String>) {
+    init{
         viewModelScope.launch {
+            val idStringList = id.split("_")
             val list = arrayListOf<Long>()
             for (elem in idStringList) {
                 list.add(elem.toLong())
@@ -60,9 +65,9 @@ class FeleletScreenViewModel(private val db: Dao) : ViewModel() {
         }
     }
 
-    fun leptetes() {
-        if (_ssz < _kartyak.value!!.size - 1) {
-            _ssz++
+    fun leptetes() : Boolean {
+        _ssz++
+        if (_ssz < _kartyak.value!!.size) {
             _aktualisKerdes.value = _kartyak.value!![_ssz]
             if (_aktualisKerdes.value!!.tipus == Tipus.VALASZOLOS) {
                 _helyesValasz = _aktualisKerdes.value!!.valasz!!
@@ -72,6 +77,7 @@ class FeleletScreenViewModel(private val db: Dao) : ViewModel() {
                 _kevertValaszok.value = _kevertValaszok.value!!.shuffled()
             }
         }
+        return _ssz == _kartyak.value!!.size
     }
 
     fun setKesz(kesz : Boolean){

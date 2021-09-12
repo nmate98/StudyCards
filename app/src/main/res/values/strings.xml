@@ -19,4 +19,11 @@
     <string name="valassz_tageket">Válassz tageket</string>
     <string name="ellenorzes">Ellenőrzés</string>
     <string name="kovetkezo">Következő</string>
+    <string name="teljesitmenyed">Teljesítményed:</string>
+    <string name="kesz">Kész</string>
+    <string name="kilepes">Kilépés</string>
+    <string name="nem">Nem</string>
+    <string name="igen">Igen</string>
+    <string name="biztosan_kilepsz">Biztosan kilépsz?</string>
+    <string name="vege">Vége</string>
 </resources>

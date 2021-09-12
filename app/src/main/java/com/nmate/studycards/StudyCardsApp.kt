@@ -1,6 +1,7 @@
 package com.nmate.studycards
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -10,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nmate.studycards.feleletscreen.FeleletScreen
 import com.nmate.studycards.kartyaletrehozasscreen.KartyaLetrehozasScreen
 import com.nmate.studycards.muveletvalasztasscreen.MuveletValasztasScreen
+import com.nmate.studycards.pontszamscreen.PontszamScreen
 import com.nmate.studycards.tagvalasztasscreen.TagValasztasScreen
 
 @Composable
@@ -26,7 +28,7 @@ fun Navigation(navController: NavHostController) {
         }
         composable("Felelet/{id}",
             arguments = listOf(navArgument("id") { type = NavType.StringType })) {
-            FeleletScreen(it.arguments?.getString("id")!!)
+            FeleletScreen(it.arguments?.getString("id")!!, navController)
         }
         composable("Letrehozas") {
             KartyaLetrehozasScreen(navController)
@@ -37,5 +39,13 @@ fun Navigation(navController: NavHostController) {
         composable("MuveletValaszt") {
             MuveletValasztasScreen(navController)
         }
+        composable("Pontszam/{osszes}/{helyes}",
+            arguments = listOf(navArgument("osszes") { type = NavType.IntType },
+                navArgument("helyes") { type = NavType.IntType })) {
+            PontszamScreen(navController,
+                it.arguments?.getInt("osszes")!!,
+                it.arguments?.getInt("helyes")!!)
+        }
     }
 }
+

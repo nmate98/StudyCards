@@ -1,14 +1,11 @@
 package com.nmate.studycards.feleletscreen
 
 import android.app.Application
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -18,69 +15,119 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.nmate.studycards.R
 import com.nmate.studycards.Tipus
 import com.nmate.studycards.adatbazis.Adatbazis
 
 @Composable
-fun FeleletScreen(id: String) {
+fun FeleletScreen(id: String, navController: NavHostController) {
     val db = Adatbazis.getInstance(LocalContext.current.applicationContext as Application).Dao
-    val factory = FeleletScreenViewModelFactory(db)
+    val factory = FeleletScreenViewModelFactory(db, id)
     val viewModel: FeleletScreenViewModel = viewModel(factory = factory)
-    val tagId by remember { mutableStateOf(id.split("_")) }
-    viewModel.getKerdesek(tagId)
-    Screen(viewModel)
-
+    Screen(viewModel, navController)
 }
 
 @Composable
-fun Screen(viewModel: FeleletScreenViewModel) {
+fun Screen(viewModel: FeleletScreenViewModel, navController: NavHostController) {
     val bevittValasz by viewModel.bevittValasz.observeAsState()
     val helyes by viewModel.helyes.observeAsState()
     var kovetkezo by remember { mutableStateOf(false) }
     val aktualisKerdes by viewModel.aktualisKerdes.observeAsState()
+    var kilepDialog by remember {
+        mutableStateOf(false)
+    }
+    BackHandler(true) {
+        kilepDialog = true
+    }
+    if (kilepDialog) {
+        AlertDialog(
+            onDismissRequest = { kilepDialog = false },
+            title = { Text(stringResource(R.string.kilepes)) },
+            text = { Text(stringResource(R.string.biztosan_kilepsz)) },
+            confirmButton = {
+                Button(onClick = {
+                    kilepDialog = false
+                    navController.popBackStack("MainMenu", true)
+                    navController.navigate("MainMenu")
+                }) {
+                    Text(stringResource(R.string.igen))
+                }
+            },
+            dismissButton = {
+                Button(onClick = { kilepDialog = false }) {
+                    Text(stringResource(R.string.nem))
+                }
+            }
+        )
+    }
     Column() {
         Card(Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.3f)
-            .padding(16.dp)) {
+            .padding(16.dp),
+            elevation = 8.dp) {
             Box(Modifier.fillMaxSize()) {
                 Text(aktualisKerdes!!.kerdes!!, modifier = Modifier.align(Alignment.Center))
             }
         }
         if (aktualisKerdes!!.tipus == Tipus.VALASZOLOS) {
-            valaszTextField(viewModel)
+            Card(Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.25f)
+                .padding(16.dp),
+                elevation = 8.dp) {
+                Box(Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)) {
+                    valaszTextField(viewModel)
+                }
+            }
         } else {
-            feleletValasztoMezok(viewModel)
+            feleletValasztoMezok(viewModel, Modifier.fillMaxHeight(0.5f))
         }
-        buttons(viewModel)
+        Box(Modifier
+            .fillMaxHeight(0.7f)
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            buttons(viewModel, navController, Modifier.fillMaxWidth())
+        }
     }
 }
 
 @Composable
 fun valaszTextField(viewModel: FeleletScreenViewModel) {
     val bevittValasz by viewModel.bevittValasz.observeAsState()
-    TextField(value = bevittValasz!!, onValueChange = { viewModel.setBevittValasz(it) })
+    TextField(value = bevittValasz!!,
+        onValueChange = { viewModel.setBevittValasz(it) },
+        modifier = Modifier.fillMaxSize(),
+        singleLine = true,
+        colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White.copy(0f)))
 }
 
 @Composable
-fun feleletValasztoMezok(viewModel: FeleletScreenViewModel) {
-    Column() {
-        Row() {
+fun feleletValasztoMezok(viewModel: FeleletScreenViewModel, modifier: Modifier) {
+    Column(modifier = modifier) {
+        Row(Modifier
+            .padding(16.dp, 16.dp, 16.dp, 8.dp)
+            .weight(0.5f)) {
             Box(Modifier
                 .weight(0.5f)
-                .fillMaxHeight(0.5f)) {
+                .padding(end = 16.dp)) {
                 valaszKartya(viewModel, ssz = 0)
             }
             Box(Modifier
                 .weight(0.5f)
-                .fillMaxHeight(0.5f)) {
+            ) {
                 valaszKartya(viewModel, ssz = 1)
             }
         }
-        Row() {
+        Row(Modifier
+            .padding(16.dp, 8.dp, 16.dp, 8.dp)
+            .weight(0.5f)) {
             Box(Modifier
                 .weight(0.5f)
+                .padding(end = 16.dp)
             ) {
                 valaszKartya(viewModel, ssz = 2)
             }
@@ -96,59 +143,82 @@ fun feleletValasztoMezok(viewModel: FeleletScreenViewModel) {
 @Composable
 fun valaszKartya(viewModel: FeleletScreenViewModel, ssz: Int) {
     Card(Modifier
-        .fillMaxHeight(0.1f)) {
+        .fillMaxSize(),
+        elevation = 8.dp) {
         val bevittValasz by viewModel.bevittValasz.observeAsState()
         val kesz by viewModel.kesz.observeAsState()
         val text by remember { mutableStateOf(viewModel.kevertValaszok.value!![ssz]) }
-        Log.d("TAG", "valaszKartya: $ssz $kesz")
-        Text(text,
-            Modifier
-                .clickable(enabled = !kesz!!, onClick = {
-                    viewModel.setBevittValasz(text)
-                })
-                .background(if (!kesz!!) {
-                    when (bevittValasz) {
-                        text -> Color(0xffffa500)
-                        else -> Color.White
+        Box(Modifier
+            .clickable(enabled = !kesz!!, onClick = {
+                viewModel.setBevittValasz(text)
+            })
+            .background(if (!kesz!!) {
+                when (bevittValasz) {
+                    text -> Color(0xffffa500)
+                    else -> Color.White
+                }
+            } else {
+                when (bevittValasz) {
+                    text -> if (viewModel.osszehasonlitHelyesValasszal(text)) {
+                        Color.Green
+                    } else {
+                        Color.Red
                     }
-                } else {
-                    when (bevittValasz) {
-                        text -> if (viewModel.osszehasonlitHelyesValasszal(text)) {
-                            Color.Green
-                        } else {
-                            Color.Red
-                        }
-                        else -> if (viewModel.osszehasonlitHelyesValasszal(text)) {
-                            Color.Green
-                        } else {
-                            Color.White
-                        }
+                    else -> if (viewModel.osszehasonlitHelyesValasszal(text)) {
+                        Color.Green
+                    } else {
+                        Color.White
                     }
-                })
-                .fillMaxSize()
-        )
+                }
+            })) {
+
+            Text(text,
+                Modifier
+                    .align(Alignment.Center)
+                    .background(Color.White.copy(0f))
+            )
+        }
     }
 }
 
 @Composable
-fun buttons(viewModel: FeleletScreenViewModel) {
+fun buttons(
+    viewModel: FeleletScreenViewModel,
+    navController: NavHostController,
+    modifier: Modifier,
+) {
     val kesz by viewModel.kesz.observeAsState()
     val bevittValasz by viewModel.bevittValasz.observeAsState()
+    var vege by remember {
+        mutableStateOf(false)
+    }
     if (!kesz!!) {
-        Button(onClick = {
+        TextButton(onClick = {
             viewModel.ellenorzes()
             viewModel.setKesz(true)
         },
-            enabled = !bevittValasz.equals("")) {
+            enabled = !bevittValasz.equals(""),
+            modifier = modifier) {
             Text(stringResource(R.string.ellenorzes))
         }
     } else {
-        Button(onClick = {
-            viewModel.leptetes()
-            viewModel.setKesz(false)
-            viewModel.setBevittValasz("")
-        }) {
-            Text(stringResource(R.string.kovetkezo))
+        val helyes by viewModel.helyes.observeAsState()
+        TextButton(onClick = {
+            vege = viewModel.leptetes()
+            if (vege) {
+                navController.navigate("Pontszam/${viewModel.kartyak.value!!.size}/$helyes")
+            } else {
+                viewModel.setKesz(false)
+                viewModel.setBevittValasz("")
+            }
+
+        },
+            modifier = modifier) {
+            Text(if (vege) {
+                stringResource(R.string.kovetkezo)
+            } else {
+                stringResource(R.string.vege)
+            })
         }
     }
 }

@@ -19,11 +19,12 @@ class TagValasztasScreenViewModel(private val db : Dao) : ViewModel() {
     val kivalasztottTagek: LiveData<ArrayList<Long>> = _kivalasztottTagek
 
 
-    fun getTagek(){
+    init{
         viewModelScope.launch {
             _tagek.value = _getTagek()
         }
     }
+
 
     private suspend fun _getTagek() : List<Tag>{
         return withContext(Dispatchers.IO){
@@ -32,12 +33,22 @@ class TagValasztasScreenViewModel(private val db : Dao) : ViewModel() {
     }
 
     fun kivalaszt(id: Long){
-        _kivalasztottTagek.value!!.add(id)
+        val list = arrayListOf<Long>()
+        for(elem in _kivalasztottTagek.value!!){
+            list.add(elem)
+        }
+        list.add(id)
+        _kivalasztottTagek.value = list
     }
 
     fun torol(id: Long){
-        _kivalasztottTagek.value!!.remove(id)
-
+        val list = arrayListOf<Long>()
+        for(elem in _kivalasztottTagek.value!!){
+            list.add(elem)
+        }
+        list.remove(id)
+        _kivalasztottTagek.value = list
     }
+
 
 }
