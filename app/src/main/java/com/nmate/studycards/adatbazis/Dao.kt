@@ -49,4 +49,7 @@ interface Dao {
 
     @Query("Select * from tagkartyakapcsolo")
     fun getTagKartyaKapcsolo() : List<TagKartyaKapcsolo>
+
+    @Query("Delete from tagkartyakapcsolo where KartyaID = :KartyaID and TagID not in (:tagID)")
+    fun tagTorles(KartyaID: Long, tagID : List<Long>)
 }

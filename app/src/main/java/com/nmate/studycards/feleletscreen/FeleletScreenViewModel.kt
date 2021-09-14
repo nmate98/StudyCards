@@ -17,13 +17,14 @@ import kotlinx.coroutines.withContext
 
 class FeleletScreenViewModel(private val db: Dao, private val id: String) : ViewModel() {
 
-    private val _kartyak = MutableLiveData<List<Kartya>>()
+    private val _kartyak = MutableLiveData(listOf(Kartya()))
     val kartyak: LiveData<List<Kartya>> = _kartyak
 
     private val _helyes = MutableLiveData<Long>(0)
     val helyes: LiveData<Long> = _helyes
 
-    private var _ssz = 0
+    private val _ssz = MutableLiveData(0)
+    val ssz : LiveData<Int> = _ssz
 
 
     private val _aktualisKerdes = MutableLiveData(Kartya())
@@ -66,9 +67,9 @@ class FeleletScreenViewModel(private val db: Dao, private val id: String) : View
     }
 
     fun leptetes() : Boolean {
-        _ssz++
-        if (_ssz < _kartyak.value!!.size) {
-            _aktualisKerdes.value = _kartyak.value!![_ssz]
+        _ssz.value = _ssz.value!!+1
+        if (_ssz.value!! < _kartyak.value!!.size) {
+            _aktualisKerdes.value = _kartyak.value!![_ssz.value!!]
             if (_aktualisKerdes.value!!.tipus == Tipus.VALASZOLOS) {
                 _helyesValasz = _aktualisKerdes.value!!.valasz!!
             } else {
@@ -77,7 +78,7 @@ class FeleletScreenViewModel(private val db: Dao, private val id: String) : View
                 _kevertValaszok.value = _kevertValaszok.value!!.shuffled()
             }
         }
-        return _ssz == _kartyak.value!!.size
+        return _ssz.value!! == _kartyak.value!!.size
     }
 
     fun setKesz(kesz : Boolean){

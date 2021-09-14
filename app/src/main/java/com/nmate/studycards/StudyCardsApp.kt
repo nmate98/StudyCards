@@ -10,6 +10,8 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.nmate.studycards.feleletscreen.FeleletScreen
 import com.nmate.studycards.kartyaletrehozasscreen.KartyaLetrehozasScreen
+import com.nmate.studycards.kartyaletrehozasscreen.feleletvalasztos.FeleletValasztosScreen
+import com.nmate.studycards.kartyaletrehozasscreen.valaszolos.ValaszolosScreen
 import com.nmate.studycards.muveletvalasztasscreen.MuveletValasztasScreen
 import com.nmate.studycards.pontszamscreen.PontszamScreen
 import com.nmate.studycards.tagvalasztasscreen.TagValasztasScreen
@@ -38,6 +40,12 @@ fun Navigation(navController: NavHostController) {
         }
         composable("MuveletValaszt") {
             MuveletValasztasScreen(navController)
+        }
+        composable("FeleletValasztos") {
+            FeleletValasztosScreen(navController)
+        }
+        composable("Valaszolos") {
+            ValaszolosScreen(navController)
         }
         composable("Pontszam/{osszes}/{helyes}",
             arguments = listOf(navArgument("osszes") { type = NavType.IntType },

@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,10 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.nmate.studycards.dialogs.kartyaTipusValasztasDialog
 import java.util.*
 
 @Composable
 fun MainMenu(navController: NavHostController) {
+    var valasztoMutat = remember { mutableStateOf(false)}
     Column(modifier = Modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -44,16 +49,21 @@ fun MainMenu(navController: NavHostController) {
             modifier = Modifier
                 .weight(0.4f)
                 .fillMaxWidth()) {
-            Button(onClick = {navController.navigate("TagValaszt")},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f)),
-                elevation = ButtonDefaults.elevation(0.dp)) {
-                Text(stringResource(id = R.string.kezd_button))
+            TextButton(onClick = {navController.navigate("TagValaszt")},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f))) {
+                Text(stringResource(id = R.string.kezd_button), fontSize = 20.sp)
             }
-            Button(onClick = {navController.navigate("Letrehozas")},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f)),
-                elevation = ButtonDefaults.elevation(0.dp)) {
-                Text(stringResource(id = R.string.kartya_letrehozasa))
+            TextButton(onClick = {valasztoMutat.value = true},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f))) {
+                Text(stringResource(id = R.string.kartya_letrehozasa), fontSize = 20.sp)
+            }
+            TextButton(onClick = {navController.navigate("Kart")},
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f))) {
+                Text(stringResource(id = R.string.kartya_modositasa), fontSize = 20.sp)
             }
         }
+    }
+    if(valasztoMutat.value){
+        kartyaTipusValasztasDialog(navController, valasztoMutat)
     }
 }

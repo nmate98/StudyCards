@@ -22,8 +22,7 @@ class KartyaLetrehozasScreenViewModel(private val db: Dao) : ViewModel() {
     private val _kivalasztottTagek = MutableLiveData(arrayListOf<Long>())
     val kivalasztottTagek: LiveData<ArrayList<Long>> = _kivalasztottTagek
 
-
-    fun getTagek() {
+    init{
         viewModelScope.launch {
             _tagek.value = _getTagek()
         }
@@ -36,11 +35,21 @@ class KartyaLetrehozasScreenViewModel(private val db: Dao) : ViewModel() {
     }
 
     fun tagKivalaszt(id: Long) {
-        _kivalasztottTagek.value!!.add(id)
+        val list = arrayListOf<Long>()
+        for(elem in _kivalasztottTagek.value!!){
+            list.add(elem)
+        }
+        list.add(id)
+        _kivalasztottTagek.value = list
     }
 
     fun tagTorol(id: Long) {
-        _kivalasztottTagek.value!!.remove(id)
+        val list = arrayListOf<Long>()
+        for(elem in _kivalasztottTagek.value!!){
+            list.add(elem)
+        }
+        list.remove(id)
+        _kivalasztottTagek.value = list
     }
 
     fun tagVisszaallit(){
@@ -83,5 +92,9 @@ class KartyaLetrehozasScreenViewModel(private val db: Dao) : ViewModel() {
         for(tag in _kivalasztottTagek.value!!){
             regiTagek.add(tag)
         }
+    }
+
+    fun tagListaUrit(){
+        _kivalasztottTagek.value = arrayListOf()
     }
 }

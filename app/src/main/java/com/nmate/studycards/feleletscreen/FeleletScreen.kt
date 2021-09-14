@@ -1,6 +1,7 @@
 package com.nmate.studycards.feleletscreen
 
 import android.app.Application
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.navigation.NavHostController
 import com.nmate.studycards.R
 import com.nmate.studycards.Tipus
 import com.nmate.studycards.adatbazis.Adatbazis
+import com.nmate.studycards.dialogs.kilepesDialog
 
 @Composable
 fun FeleletScreen(id: String, navController: NavHostController) {
@@ -34,34 +36,19 @@ fun Screen(viewModel: FeleletScreenViewModel, navController: NavHostController) 
     val helyes by viewModel.helyes.observeAsState()
     var kovetkezo by remember { mutableStateOf(false) }
     val aktualisKerdes by viewModel.aktualisKerdes.observeAsState()
-    var kilepDialog by remember {
+    var kilepDialog = remember {
         mutableStateOf(false)
     }
     BackHandler(true) {
-        kilepDialog = true
+        kilepDialog.value = true
     }
-    if (kilepDialog) {
-        AlertDialog(
-            onDismissRequest = { kilepDialog = false },
-            title = { Text(stringResource(R.string.kilepes)) },
-            text = { Text(stringResource(R.string.biztosan_kilepsz)) },
-            confirmButton = {
-                Button(onClick = {
-                    kilepDialog = false
-                    navController.popBackStack("MainMenu", true)
-                    navController.navigate("MainMenu")
-                }) {
-                    Text(stringResource(R.string.igen))
-                }
-            },
-            dismissButton = {
-                Button(onClick = { kilepDialog = false }) {
-                    Text(stringResource(R.string.nem))
-                }
-            }
-        )
+    if (kilepDialog.value) {
+        kilepesDialog(kilepDialog, navController)
     }
     Column() {
+        Box(Modifier.fillMaxHeight(0.1f)) {
+            felsoSor(viewModel, navController)
+        }
         Card(Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.3f)
@@ -90,7 +77,22 @@ fun Screen(viewModel: FeleletScreenViewModel, navController: NavHostController) 
             .fillMaxHeight(0.7f)
             .fillMaxWidth()
             .padding(16.dp)) {
-            buttons(viewModel, navController, Modifier.fillMaxWidth())
+            gombok(viewModel, navController, Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
+fun felsoSor(viewModel: FeleletScreenViewModel, navController: NavHostController) {
+    val sorszam by viewModel.ssz.observeAsState()
+    Row(Modifier
+        .fillMaxSize()) {
+        Text(stringResource(id = R.string.kerdesszam,
+            (sorszam!! + 1),
+            viewModel.kartyak.value!!.size), Modifier.weight(0.5f))
+        TextButton(onClick = { navController.navigate("Pontszam/${sorszam!! + 1}/${viewModel.helyes.value}") },
+            Modifier.weight(0.5f)) {
+            Text(stringResource(R.string.befejezes))
         }
     }
 }
@@ -113,11 +115,12 @@ fun feleletValasztoMezok(viewModel: FeleletScreenViewModel, modifier: Modifier) 
             .weight(0.5f)) {
             Box(Modifier
                 .weight(0.5f)
-                .padding(end = 16.dp)) {
+                .padding(end = 8.dp)) {
                 valaszKartya(viewModel, ssz = 0)
             }
             Box(Modifier
                 .weight(0.5f)
+                .padding(start = 8.dp)
             ) {
                 valaszKartya(viewModel, ssz = 1)
             }
@@ -127,12 +130,13 @@ fun feleletValasztoMezok(viewModel: FeleletScreenViewModel, modifier: Modifier) 
             .weight(0.5f)) {
             Box(Modifier
                 .weight(0.5f)
-                .padding(end = 16.dp)
+                .padding(end = 8.dp)
             ) {
                 valaszKartya(viewModel, ssz = 2)
             }
             Box(Modifier
                 .weight(0.5f)
+                .padding(start = 8.dp)
             ) {
                 valaszKartya(viewModel, ssz = 3)
             }
@@ -182,7 +186,7 @@ fun valaszKartya(viewModel: FeleletScreenViewModel, ssz: Int) {
 }
 
 @Composable
-fun buttons(
+fun gombok(
     viewModel: FeleletScreenViewModel,
     navController: NavHostController,
     modifier: Modifier,
@@ -214,7 +218,7 @@ fun buttons(
 
         },
             modifier = modifier) {
-            Text(if (vege) {
+            Text(if (!vege) {
                 stringResource(R.string.kovetkezo)
             } else {
                 stringResource(R.string.vege)
