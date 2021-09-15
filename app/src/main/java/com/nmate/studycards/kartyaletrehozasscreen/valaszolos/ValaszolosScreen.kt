@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -18,12 +19,13 @@ import com.nmate.studycards.R
 import com.nmate.studycards.Tipus
 import com.nmate.studycards.adatbazis.Adatbazis
 import com.nmate.studycards.dialogs.kilepesDialog
-import com.nmate.studycards.dialogs.tagValaszt
+import com.nmate.studycards.dialogs.KartyaLetrehozTagValaszt
 import com.nmate.studycards.kartyaletrehozasscreen.KartyaLetrehozasScreenViewModel
 import com.nmate.studycards.kartyaletrehozasscreen.KartyaLetrehozasScreenViewModelFactory
 import com.nmate.studycards.modellek.Kartya
 import com.nmate.studycards.modellek.Tag
 
+@ExperimentalComposeUiApi
 @Composable
 fun ValaszolosScreen(navController: NavHostController) {
     val db = Adatbazis.getInstance(LocalContext.current.applicationContext as Application).Dao
@@ -32,6 +34,7 @@ fun ValaszolosScreen(navController: NavHostController) {
     Screen(navController, viewmodel)
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun Screen(navController: NavHostController, viewmodel: KartyaLetrehozasScreenViewModel) {
     var kerdes by remember { mutableStateOf("") }
@@ -49,7 +52,7 @@ fun Screen(navController: NavHostController, viewmodel: KartyaLetrehozasScreenVi
     }
 
     if (tagValaszt.value) {
-        tagValaszt(tagValaszt, viewmodel, tagek)
+        KartyaLetrehozTagValaszt(tagValaszt, viewmodel)
     }
 
     Column() {
@@ -76,7 +79,6 @@ fun Screen(navController: NavHostController, viewmodel: KartyaLetrehozasScreenVi
                 TextButton(onClick = {
                     tagValaszt.value = true
                 },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f)),
                     modifier = Modifier.align(Alignment.Center)) {
                     Text(stringResource(R.string.valassz_tageket))
                 }
@@ -92,7 +94,7 @@ fun Screen(navController: NavHostController, viewmodel: KartyaLetrehozasScreenVi
         Box(Modifier
             .padding(8.dp)
             .fillMaxWidth()) {
-            valaszKartya(helyes, true)
+            valaszKartya(helyes)
         }
 
         TextButton(onClick = {
@@ -113,7 +115,7 @@ fun Screen(navController: NavHostController, viewmodel: KartyaLetrehozasScreenVi
 }
 
 @Composable
-fun valaszKartya(text: MutableState<String>, helyes: Boolean) {
+fun valaszKartya(text: MutableState<String>) {
     Card(Modifier
         .padding(8.dp)
         .fillMaxWidth(), elevation = 8.dp) {
@@ -121,11 +123,8 @@ fun valaszKartya(text: MutableState<String>, helyes: Boolean) {
             TextField(value = text.value,
                 onValueChange = { text.value = it },
                 placeholder = {
-                    if (helyes) {
                         Text(stringResource(R.string.helyes_valasz))
-                    } else {
                         Text(stringResource(R.string.hibas_valasz))
-                    }
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = Color.White.copy(

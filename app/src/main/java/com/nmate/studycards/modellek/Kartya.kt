@@ -10,5 +10,5 @@ data class Kartya(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") var id: Long? = 0L,
     @ColumnInfo(name = "kerdes")var kerdes: String? = "",
     @ColumnInfo(name = "tipus")var tipus: Tipus = Tipus.VALASZOLOS,
-    @ColumnInfo(name = "valasz")var valasz: String? = "",
+    @ColumnInfo(name = "valasz")var valasz: String? = "**vege****vege****vege**",
 )

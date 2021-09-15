@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nmate.studycards.Tipus
 import com.nmate.studycards.adatbazis.Dao
 import com.nmate.studycards.modellek.Kartya
@@ -23,6 +24,12 @@ class KartyaLetrehozasScreenViewModel(private val db: Dao) : ViewModel() {
     val kivalasztottTagek: LiveData<ArrayList<Long>> = _kivalasztottTagek
 
     init{
+        viewModelScope.launch {
+            _tagek.value = _getTagek()
+        }
+    }
+
+    fun getTagek(){
         viewModelScope.launch {
             _tagek.value = _getTagek()
         }

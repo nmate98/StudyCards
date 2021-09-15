@@ -57,7 +57,7 @@ fun MainMenu(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f))) {
                 Text(stringResource(id = R.string.kartya_letrehozasa), fontSize = 20.sp)
             }
-            TextButton(onClick = {navController.navigate("Kart")},
+            TextButton(onClick = {navController.navigate("KartyaModositValaszt")},
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White.copy(0f))) {
                 Text(stringResource(id = R.string.kartya_modositasa), fontSize = 20.sp)
             }

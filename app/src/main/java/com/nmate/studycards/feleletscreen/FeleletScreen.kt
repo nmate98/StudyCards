@@ -36,14 +36,8 @@ fun Screen(viewModel: FeleletScreenViewModel, navController: NavHostController) 
     val helyes by viewModel.helyes.observeAsState()
     var kovetkezo by remember { mutableStateOf(false) }
     val aktualisKerdes by viewModel.aktualisKerdes.observeAsState()
-    var kilepDialog = remember {
-        mutableStateOf(false)
-    }
-    BackHandler(true) {
-        kilepDialog.value = true
-    }
-    if (kilepDialog.value) {
-        kilepesDialog(kilepDialog, navController)
+
+    BackHandler(false) {
     }
     Column() {
         Box(Modifier.fillMaxHeight(0.1f)) {
